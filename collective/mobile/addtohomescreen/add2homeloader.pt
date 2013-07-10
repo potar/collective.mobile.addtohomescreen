@@ -1,5 +1,0 @@
-<tal:block define="_dummy python:request.response.setHeader('content-type','text/javascript;;charset=utf-8');" />
-var addToHomeConfig = {
-	returningVisitor: true,		// Show the message only to returning visitors (ie: don't show it the first time)
-	expire: 720			// Show the message only once every 12 hours
-};

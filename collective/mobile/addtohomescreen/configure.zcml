@@ -24,7 +24,7 @@
   <browser:page
       for="*"
       name="add2homeloader.js" 
-      template="add2homeloader.pt"
+      class=".views.AddToHomeScreenSettings"
       permission="zope2.View"
       />
 

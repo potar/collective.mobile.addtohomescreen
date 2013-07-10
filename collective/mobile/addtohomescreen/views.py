@@ -1,5 +1,6 @@
 """ Module dedicated for views """
 
+import json
 from Products.Five import BrowserView
 from Products.CMFCore.utils import getToolByName
 from plone.registry.interfaces import IRegistry
@@ -15,7 +16,7 @@ def lchop(s, start):
         return s[length:]
     return s
 
-       
+
 class AddToHomeScreenAllowed(BrowserView):
     """ Class dedicated to enable/disable javascript
        (add2homeloader.js) and css styles on the page.
@@ -46,5 +47,27 @@ class AddToHomeScreenAllowed(BrowserView):
 
     def __call__(self):
         return self.isUrlAllowed()
-        
-       
+
+
+class AddToHomeScreenSettings(BrowserView):
+    """ It forms settings which refer to the popup window """
+
+    def javascriptvars(self):
+        """" It overlaps settings which was set up by static/add2home.js """
+        registry = getUtility(IRegistry) 
+        screen_settings = registry.forInterface(IAddToHomeScreenSettings) 
+        return "var addToHomeConfig = %s" % json.dumps(
+                   {
+                       # Show the message only to returning visitors 
+                       # (ie: don't show it the first time)
+                       'returningVisitor': True,     
+                       'message': screen_settings.message,
+                       # Show the message only once every 12 hours
+                       'expire': 720            
+                   }
+        )
+
+
+    def __call__(self):
+        self.request.response.setHeader('content-type', 'text/javascript;;charset=utf-8')
+        return self.javascriptvars()
