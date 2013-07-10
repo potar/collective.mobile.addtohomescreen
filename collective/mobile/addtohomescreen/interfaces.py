@@ -13,5 +13,12 @@ class IAddToHomeScreenSettings(Interface):
                      "add2homeloader.js and add2home.css turned on." 
                      "Eg: /front-page",
         default=[],
-        value_type=schema.TextLine(title=u"Allowed urls path"))
+        value_type=schema.TextLine(title=u"Allowed urls path")
+    )
 
+    message = schema.Text(
+        title=u'The popup window message',
+        description=u"Enter the message which will be displayed "
+                     "on the popup window.",
+        default=u'',
+    )
