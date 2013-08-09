@@ -3,12 +3,9 @@
 import json
 from Products.Five import BrowserView
 from Products.CMFCore.utils import getToolByName
-from plone.registry.interfaces import IRegistry
-from zope.component import getUtility, getMultiAdapter
+from zope.component import getMultiAdapter
 
-from collective.mobile.addtohomescreen.interfaces import \
-                                                  IAddToHomeScreenSettings
-
+from collective.mobile.addtohomescreen.utils import get_add2homescreen_settings
 
 def lchop(s, start):
     length = len(start)
@@ -32,9 +29,8 @@ class AddToHomeScreenAllowed(BrowserView):
         return ['/' + obj_path, browser_path]
 
     def isUrlAllowed(self):
-        registry = getUtility(IRegistry) 
-        screen_settings = registry.forInterface(IAddToHomeScreenSettings) 
-        allowed_url_paths = screen_settings.allowed_url_paths
+        screen_settings = get_add2homescreen_settings()
+        allowed_url_paths = screen_settings.get('allowed_url_paths')
 
         if allowed_url_paths: 
             obj_path, browser_path = self.getCurrentPaths()
@@ -53,15 +49,14 @@ class AddToHomeScreenSettings(BrowserView):
     """ It forms settings which refer to the popup window """
 
     def javascriptvars(self):
-        """" It overlaps settings which was set up by static/add2home.js """
-        registry = getUtility(IRegistry) 
-        screen_settings = registry.forInterface(IAddToHomeScreenSettings) 
+        """ It overlaps settings which was set up by static/add2home.js """
+        screen_settings = get_add2homescreen_settings() 
         return "var addToHomeConfig = %s" % json.dumps(
                    {
                        # Show the message only to returning visitors 
                        # (ie: don't show it the first time)
                        'returningVisitor': True,     
-                       'message': screen_settings.message,
+                       'message': screen_settings.get('message'),
                        # Show the message only once every 12 hours
                        'expire': 720            
                    }
