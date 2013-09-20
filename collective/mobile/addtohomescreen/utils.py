@@ -6,21 +6,16 @@ from collective.mobile.addtohomescreen.interfaces import \
                                                   IAddToHomeScreenSettings
 
 
-def get_add2homescreen_settings():
+def get_add2homescreen_settings(check=False):
     """ It gets settings from the plone registry """
     registry = getUtility(IRegistry)
-    field_names = IAddToHomeScreenSettings.names()
-    try:
-        screen_settings = registry.forInterface(IAddToHomeScreenSettings)
-        convert_settings = (
-            (name, getattr(screen_settings, name))
-            for name in field_names
-        )
-    # it happens when we add a new field into the schema
-    except KeyError:
-        # set default settings
-        convert_settings = (
-            (name, IAddToHomeScreenSettings.get(name).default)
-             for name in field_names
-        )
-    return dict(convert_settings)
+    # if you want to omit KeyError set 'check=False'
+    return registry.forInterface(IAddToHomeScreenSettings, check=check)
+
+
+def get_config_setting(fieldname):
+    settings = get_add2homescreen_settings()
+    value = getattr(settings, fieldname)
+    if value == settings.__schema__[fieldname].missing_value:
+        value = settings.__schema__[fieldname].default
+    return value

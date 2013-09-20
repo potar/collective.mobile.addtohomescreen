@@ -5,7 +5,7 @@ from Products.Five import BrowserView
 from Products.CMFCore.utils import getToolByName
 from zope.component import getMultiAdapter
 
-from collective.mobile.addtohomescreen.utils import get_add2homescreen_settings
+from collective.mobile.addtohomescreen.utils import get_config_setting
 
 def lchop(s, start):
     length = len(start)
@@ -29,9 +29,7 @@ class AddToHomeScreenAllowed(BrowserView):
         return ['/' + obj_path, browser_path]
 
     def isUrlAllowed(self):
-        screen_settings = get_add2homescreen_settings()
-        allowed_url_paths = screen_settings.get('allowed_url_paths')
-
+        allowed_url_paths = get_config_setting('allowed_url_paths')
         if allowed_url_paths: 
             obj_path, browser_path = self.getCurrentPaths()
             return (obj_path in allowed_url_paths) or \
@@ -50,13 +48,12 @@ class AddToHomeScreenSettings(BrowserView):
 
     def javascriptvars(self):
         """ It overlaps settings which was set up by static/add2home.js """
-        screen_settings = get_add2homescreen_settings() 
         return "var addToHomeConfig = %s" % json.dumps(
                    {
                        # Show the message only to returning visitors 
                        # (ie: don't show it the first time)
                        'returningVisitor': True,     
-                       'message': screen_settings.get('message'),
+                       'message': get_config_setting('message'),
                        # Show the message only once every 12 hours
                        'expire': 720            
                    }
